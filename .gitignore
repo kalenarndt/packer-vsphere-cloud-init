@@ -48,6 +48,7 @@ crash.log
 **/kubernetes/*
 **/docker/*
 **/consul/*
+*.pub
 # For built boxes
 *.box
 

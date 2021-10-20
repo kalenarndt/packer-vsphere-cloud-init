@@ -1,14 +1,6 @@
 #cloud-config
 autoinstall:
   version: 1
-  apt:
-    geoip: true
-    preserve_sources_list: false
-    primary:
-      - arches: [amd64, i386]
-        uri: http://us.archive.ubuntu.com/ubuntu
-      - arches: [default]
-        uri: http://ports.ubuntu.com/ubuntu-ports  
   early-commands:
     # Ensures that Packer does not connect too soon.
     - sudo systemctl stop ssh
@@ -17,7 +9,7 @@ autoinstall:
     layout: ${vm_guest_os_keyboard}
   storage:
     layout:
-      name: lvm
+      name: direct
   identity:
     hostname: ubuntu-server
     username: ${build_username}
@@ -26,7 +18,7 @@ autoinstall:
     network:
       version: 2
       ethernets:
-        ens192: 
+        ens192:
           dhcp4: true
           dhcp-identifier: mac
   ssh:
@@ -44,10 +36,10 @@ autoinstall:
     package_update: true
     package_upgrade: true
     package_reboot_if_required: true
-    timezone: ${vm_guest_os_timezone}
   late-commands:
     - echo '${build_username} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/${build_username}
     - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/${build_username}
-    - sed -i "s/.*PermitRootLogin.*/PermitRootLogin yes/g" /etc/ssh/sshd_config
+    - curtin in-target --target=/target -- sed -i "s/.*PermitRootLogin.*/PermitRootLogin yes/g" /etc/ssh/sshd_config
     - curtin in-target --target=/target -- apt-get update
     - curtin in-target --target=/target -- apt-get upgrade --yes
+  timezone: ${vm_guest_os_timezone}

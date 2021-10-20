@@ -1,5 +1,5 @@
 #!/bin/bash
-# Maintainer: code@rainpole.io
+# Maintainer: kalen@kalen.sh
 # Prepares a Ubuntu Server guest operating system.
 
 # ## This isn't required on 10.3.10+ of tools

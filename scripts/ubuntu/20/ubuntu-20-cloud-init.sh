@@ -95,6 +95,7 @@ rm -fr /root/.bash_history
 # Cloud Init Nuclear Option
 rm -rf /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg
 rm -rf /etc/cloud/cloud.cfg.d/99-installer.cfg
+rm -rf /etc/netplan/00-installer-config.yaml
 echo "disable_vmware_customization: false" >> /etc/cloud/cloud.cfg
 echo "# to update this file, run dpkg-reconfigure cloud-init
 datasource_list: [ VMware, OVF, None ]" > /etc/cloud/cloud.cfg.d/90_dpkg.cfg

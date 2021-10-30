@@ -36,6 +36,11 @@ This repo contains templates that are specifically configured to be built with H
 
 #### Virtual Machine Settings
 1. Edit the `vsphere_vm_version` variable on line 22 of [templates/vsphere.pkrvars.hcl](https://github.com/kalenarndt/packer-vsphere-cloud-init/blob/7a69eb201ba391d7d80e0baa9cd3f9f62877f41f/templates/vsphere.pkrvars.hcl#L22) to match the version your environment supports
+
+#### Run
+1. Run `build-ubuntu-20.sh`
+
+
 ## FAQ
 
 #### I'm getting an error when Packer runs saying it can't find the ISO

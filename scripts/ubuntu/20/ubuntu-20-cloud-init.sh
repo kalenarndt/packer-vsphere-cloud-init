@@ -36,6 +36,16 @@ EOL
 # make sure the script is executable
 chmod +x /etc/rc.local
 
+# Ignore VMware Devices - This causes issues in multipathd where it just keeps attempting to add paths for the attached disks and floods the logs
+cat <<EOF >> /etc/multipath.conf
+blacklist {
+    device {
+        vendor "VMware"
+        product "Virtual disk"
+    }
+}
+EOF
+
 ### Create a cleanup script. ###
 echo '> Creating cleanup script ...'
 sudo cat <<EOF > /tmp/cleanup.sh

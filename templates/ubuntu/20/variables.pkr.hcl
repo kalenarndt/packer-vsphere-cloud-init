@@ -312,6 +312,11 @@ variable "communicator_timeout" {
   description = "The timeout for the communicator protocol."
 }
 
+variable "ssh_handshake_attempts" {
+  type        = string
+  description = "Number of attempts to make while connecting."
+}
+
 // Provisioner Settings
 
 variable "scripts" {

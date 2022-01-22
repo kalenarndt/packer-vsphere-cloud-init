@@ -76,19 +76,29 @@ source "vsphere-iso" "linux-ubuntu-server" {
     "/meta-data" = file("data/meta-data")
     "/user-data" = templatefile("data/user-data.pkrtpl.hcl", { build_username = var.build_username, build_password_encrypted = var.build_password_encrypted, vm_guest_os_language = var.vm_guest_os_language, vm_guest_os_keyboard = var.vm_guest_os_keyboard, vm_guest_os_timezone = var.vm_guest_os_timezone, build_key = var.build_key })
   }
-  boot_order       = var.vm_boot_order
-  boot_wait        = var.vm_boot_wait
-  boot_command     = ["<enter><enter><f6><esc><wait> ", "autoinstall ", "ip=dhcp ipv6.disable=1 ds=nocloud-net;s=http://{{.HTTPIP}}:{{.HTTPPort}}/ ", "<enter><wait>"]
+  boot_order = var.vm_boot_order
+  boot_wait  = var.vm_boot_wait
+  # Modified boot command from VMware's example repo https://github.com/vmware-samples/packer-examples-for-vsphere/blob/fe84fb98ef0743811ef1907851583434e8a21672/builds/linux/ubuntu/20-04-lts/linux-ubuntu.pkr.hcl#L95-L103
+  boot_command = [
+    "<esc><wait>",
+    "linux /casper/vmlinuz --- autoinstall ds=\"nocloud-net;seedfrom=http://{{.HTTPIP}}:{{.HTTPPort}}/\"",
+    "<enter><wait>",
+    "initrd /casper/initrd",
+    "<enter><wait>",
+    "boot",
+    "<enter>"
+  ]
   ip_wait_timeout  = var.vsphere_ip_wait_timeout
   shutdown_command = "echo '${var.build_password}' | sudo -S -E shutdown -P now"
   shutdown_timeout = var.vsphere_shutdown_timeout
 
   // Communicator Settings and Credentials
-  communicator = "ssh"
-  ssh_username = var.build_username
-  ssh_password = var.build_password
-  ssh_port     = var.communicator_port
-  ssh_timeout  = var.communicator_timeout
+  communicator           = "ssh"
+  ssh_username           = var.build_username
+  ssh_password           = var.build_password
+  ssh_handshake_attempts = var.ssh_handshake_attempts
+  ssh_port               = var.communicator_port
+  ssh_timeout            = var.communicator_timeout
 
   // Template and Content Library Settings
   convert_to_template = var.vsphere_template_conversion
@@ -115,8 +125,4 @@ build {
     scripts = var.scripts
   }
 
-  post-processor "manifest" {
-    output     = "${path.cwd}/logs/${local.buildtime}-${var.vm_guest_os_family}-${var.vm_guest_os_vendor}-${var.vm_guest_os_member}.json"
-    strip_path = false
-  }
 }

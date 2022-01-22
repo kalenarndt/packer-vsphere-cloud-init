@@ -16,7 +16,7 @@ vm_guest_os_version  = "20-04-lts"
 vm_guest_os_type = "ubuntu64Guest"
 
 // Virtual Machine Hardware Settings
-vm_firmware              = "bios"
+vm_firmware              = "efi"
 vm_cdrom_type            = "sata"
 vm_cpu_sockets           = 2
 vm_cpu_cores             = 1
@@ -38,8 +38,9 @@ vm_boot_order = "disk,cdrom"
 vm_boot_wait  = "5s"
 
 // Communicator Settings
-communicator_port    = 22
-communicator_timeout = "30m"
+communicator_port      = 22
+communicator_timeout   = "30m"
+ssh_handshake_attempts = "20"
 
 // Provisioner Settings
 scripts = ["./scripts/ubuntu/20/ubuntu-20-cloud-init.sh"]

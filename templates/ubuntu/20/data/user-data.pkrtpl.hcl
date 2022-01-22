@@ -1,6 +1,14 @@
 #cloud-config
 autoinstall:
   version: 1
+  apt:
+    geoip: true
+    preserve_sources_list: true
+    primary:
+      - arches: [amd64, i386]
+        uri: http://us.archive.ubuntu.com/ubuntu
+      - arches: [default]
+        uri: http://ports.ubuntu.com/ubuntu-ports    
   early-commands:
     # Ensures that Packer does not connect too soon.
     - sudo systemctl stop ssh
@@ -30,7 +38,7 @@ autoinstall:
     - openssh-server
     - open-vm-tools
     - net-tools
-    - cloud-init #Version that ships with Ubuntu doesn't have the VMware datasource OOB
+    - cloud-init
   user-data:
     disable_root: false
     package_update: true
@@ -39,7 +47,5 @@ autoinstall:
   late-commands:
     - echo '${build_username} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/${build_username}
     - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/${build_username}
-    - curtin in-target --target=/target -- sed -i "s/.*PermitRootLogin.*/PermitRootLogin yes/g" /etc/ssh/sshd_config
-    - curtin in-target --target=/target -- apt-get update
-    - curtin in-target --target=/target -- apt-get upgrade --yes
+    - sed -i 's/^#*\(send dhcp-client-identifier\).*$/\1 = hardware;/' /target/etc/dhcp/dhclient.conf
   timezone: ${vm_guest_os_timezone}

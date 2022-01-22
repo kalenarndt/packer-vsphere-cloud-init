@@ -42,19 +42,8 @@ override.tf.json
 # Crash log
 crash.log
 
-# folders that I need to clean up
-**/logs/*
-**/vault/*
-**/kubernetes/*
-**/docker/*
-**/consul/*
-*.pub
-# For built boxes
-*.box
+# Public keys
+files/keys/*.pub
 
-### Packer Patch ###
-# ignore temporary output files
-output-*/
-
-### Licenses ###
-*.license
+# Log files
+logs/*.txt

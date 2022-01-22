@@ -2,16 +2,6 @@
 # Maintainer: kalen@kalen.sh
 # Prepares a Ubuntu Server guest operating system.
 
-# ## This isn't required on 10.3.10+ of tools
-# ### Disable and clean tmp. ### 
-# echo '> Disabling and clean tmp ...'
-# sed -i 's/D/#&/' /usr/lib/tmpfiles.d/tmp.conf
-
-# #### Update the guest operating system. ###
-# echo '> Updating the guest operating system ...'
-# sudo apt-get update
-# sudo apt-get -y upgrade
-
 cat << 'EOL' | sudo tee /etc/rc.local
 #!/bin/sh -ef
 #
@@ -46,6 +36,9 @@ blacklist {
 }
 EOF
 
+echo '> Upgrading packages, cleaning, and purging'
+apt -y dist-upgrade --auto-remove --purge
+
 ### Create a cleanup script. ###
 echo '> Creating cleanup script ...'
 sudo cat <<EOF > /tmp/cleanup.sh
@@ -63,61 +56,54 @@ if [ -f /var/log/lastlog ]; then
 cat /dev/null > /var/log/lastlog
 fi
 
-# Cleans persistent udev rules.
-echo '> Cleaning persistent udev rules ...'
+# Cleans persistent udev rules
+echo '> Cleaning persistent udev rules'
 if [ -f /etc/udev/rules.d/70-persistent-net.rules ]; then
 rm /etc/udev/rules.d/70-persistent-net.rules
 fi
 
-# Cleans /tmp directories.
-echo '> Cleaning /tmp directories ...'
+# Cleans /tmp directories
+echo '> Cleaning /tmp directories'
 rm -rf /tmp/*
 rm -rf /var/tmp/*
 
-# Cleans SSH keys.
-echo '> Cleaning SSH keys ...'
+# Cleans SSH keys
+echo '> Cleaning SSH keys'
 rm -f /etc/ssh/ssh_host_*
 
-# Sets hostname to localhost.
-echo '> Setting hostname to localhost ...'
+# Sets hostname to localhost
+echo '> Setting hostname to localhost'
 cat /dev/null > /etc/hostname
 hostnamectl set-hostname localhost
 
-# Cleans apt-get.
-echo '> Cleaning apt-get ...'
-apt-get clean
-apt-get autoremove
-
-
 # Cleans the machine-id.
-echo '> Cleaning the machine-id ...'
+echo '> Cleaning the machine-id'
 truncate -s 0 /etc/machine-id
 rm /var/lib/dbus/machine-id
 ln -s /etc/machine-id /var/lib/dbus/machine-id
 
 # Cleans shell history.
-echo '> Cleaning shell history ...'
+echo '> Cleaning shell history'
 unset HISTFILE
 history -cw
 echo > ~/.bash_history
 rm -fr /root/.bash_history
 
-# Cloud Init Nuclear Option
+# Cloud-Init Options
 rm -rf /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg
 rm -rf /etc/cloud/cloud.cfg.d/99-installer.cfg
 rm -rf /etc/netplan/00-installer-config.yaml
 echo "disable_vmware_customization: false" >> /etc/cloud/cloud.cfg
-echo "# to update this file, run dpkg-reconfigure cloud-init
-datasource_list: [ VMware, OVF, None ]" > /etc/cloud/cloud.cfg.d/90_dpkg.cfg
+echo "datasource_list: [ VMware, OVF, None ]" > /etc/cloud/cloud.cfg.d/90_dpkg.cfg
 
 # Set boot options to not override what we are sending in cloud-init
-echo `> modifying grub`
+echo `> Modifying GRUB`
 sed -i -e "s/GRUB_CMDLINE_LINUX_DEFAULT=\"\(.*\)\"/GRUB_CMDLINE_LINUX_DEFAULT=\"\"/" /etc/default/grub
 update-grub
 EOF
 
 ### Change script permissions for execution. ### 
-echo '> Changeing script permissions for execution ...'
+echo '> Changing script permissions for execution ...'
 sudo chmod +x /tmp/cleanup.sh
 
 

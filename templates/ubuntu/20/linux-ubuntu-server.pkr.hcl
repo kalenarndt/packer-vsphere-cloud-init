@@ -13,6 +13,10 @@ packer {
       version = ">=v1.0.1"
       source  = "github.com/hashicorp/vsphere"
     }
+    amazon = {
+      version = ">= 1.0.1"
+      source  = "github.com/hashicorp/amazon"
+    }
   }
 }
 
@@ -42,7 +46,7 @@ source "vsphere-iso" "linux-ubuntu-server" {
 
   // Virtual Machine Settings
   guest_os_type        = var.vm_guest_os_type
-  vm_name              = "${var.vm_guest_os_family}-${var.vm_guest_os_vendor}-${var.vm_guest_os_member}-${var.vm_guest_os_version}"
+  vm_name              = "${var.vm_guest_os_family}-${var.vm_guest_os_vendor}-${var.vm_guest_os_member}-${var.vm_guest_os_version}-{{timestamp}}"
   firmware             = var.vm_firmware
   CPUs                 = var.vm_cpu_sockets
   cpu_cores            = var.vm_cpu_cores
@@ -113,8 +117,16 @@ source "vsphere-iso" "linux-ubuntu-server" {
 //  Defines the builders to run, provisioners, and post-processors.
 
 build {
-  sources = ["source.vsphere-iso.linux-ubuntu-server"]
-
+  hcp_packer_registry {
+    bucket_name = var.hcp_bucket_name
+    description = var.hcp_bucket_description
+    bucket_labels = {
+      "version" = "0.0.1",
+    }
+  }
+  sources = [
+    "source.vsphere-iso.linux-ubuntu-server"
+  ]
   provisioner "shell" {
     execute_command = "echo '${var.build_password}' | {{.Vars}} sudo -E -S sh -eux '{{.Path}}'"
     environment_vars = [
@@ -124,5 +136,4 @@ build {
     ]
     scripts = var.scripts
   }
-
 }

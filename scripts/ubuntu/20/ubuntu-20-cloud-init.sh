@@ -36,10 +36,7 @@ blacklist {
 }
 EOF
 
-echo '> Upgrading packages, cleaning, and purging'
-apt -y dist-upgrade --auto-remove --purge
 
-### Create a cleanup script. ###
 echo '> Creating cleanup script ...'
 sudo cat <<EOF > /tmp/cleanup.sh
 #!/bin/bash
@@ -85,9 +82,8 @@ ln -s /etc/machine-id /var/lib/dbus/machine-id
 # Cleans shell history.
 echo '> Cleaning shell history'
 unset HISTFILE
-history -cw
-echo > ~/.bash_history
-rm -fr /root/.bash_history
+truncate -s 0 ~/.bash_history
+truncate -s 0 /root/.bash_history
 
 # Cloud-Init Options
 rm -rf /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg
@@ -97,7 +93,7 @@ echo "disable_vmware_customization: false" >> /etc/cloud/cloud.cfg
 echo "datasource_list: [ VMware, OVF, None ]" > /etc/cloud/cloud.cfg.d/90_dpkg.cfg
 
 # Set boot options to not override what we are sending in cloud-init
-echo `> Modifying GRUB`
+echo '> Modifying GRUB'
 sed -i -e "s/GRUB_CMDLINE_LINUX_DEFAULT=\"\(.*\)\"/GRUB_CMDLINE_LINUX_DEFAULT=\"\"/" /etc/default/grub
 update-grub
 EOF
@@ -110,6 +106,11 @@ sudo chmod +x /tmp/cleanup.sh
 ### Executes the cleauup script. ### 
 echo '> Executing the cleanup script ...'
 sudo /tmp/cleanup.sh
+
+echo '> cleaning and purging old packages'
+apt-get clean
+apt-get -y purge 
+apt-get -y auto-remove 
 
 ### All done. ### 
 echo '> Done.'  

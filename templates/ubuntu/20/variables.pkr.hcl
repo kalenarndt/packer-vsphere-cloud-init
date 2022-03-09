@@ -330,3 +330,16 @@ variable "inline" {
   description = "A list of commands to execute."
   default     = []
 }
+
+// HCP Variables
+variable "hcp_bucket_name" {
+  type        = string
+  description = "Name of the HCP bucket that will be used or created"
+  default     = "Ubuntu-20xx"
+}
+
+variable "hcp_bucket_description" {
+  type        = string
+  description = "Description for the HCP bucket"
+  default     = "Base Ubuntu 20.04 Cloud-Init Templates"
+}

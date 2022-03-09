@@ -41,7 +41,7 @@ This repo contains templates that are specifically configured to be built with H
 1. This repo publishes your Packer build to HCP Packer. In order to do that you need your `HCP_CLIENT_ID` and your `HCP_CLIENT_SECRET` from HashiCorp Cloud. Once you have those just export them as environment variables
 2. `export HCP_CLIENT_ID=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX`
 3. `export HCP_CLIENT_SECRET=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX`
-4. Modify the variables on line 13 and 14 on [templates/build.pkrvars.hcl]
+4. Modify the variables on line 13 and 14 on [templates/build.pkrvars.hcl](https://github.com/kalenarndt/packer-vsphere-cloud-init/blob/hcp/templates/build.pkrvars.hcl#L13)
    
 #### Run
 1. Run `build-ubuntu-20.sh`

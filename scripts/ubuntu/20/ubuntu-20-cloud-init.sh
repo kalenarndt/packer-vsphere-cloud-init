@@ -36,9 +36,6 @@ blacklist {
 }
 EOF
 
-echo '> Upgrading packages, cleaning, and purging'
-apt -y dist-upgrade --auto-remove --purge
-
 ### Create a cleanup script. ###
 echo '> Creating cleanup script ...'
 sudo cat <<EOF > /tmp/cleanup.sh
